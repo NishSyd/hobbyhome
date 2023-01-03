@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 
 const HobbyList = () => {
-    const [hobbies, setHobbyList] = useState([]);
+    const [hobbyList, setHobbyList] = useState([]);
 
     useEffect(() => {
         const headers = new Headers();
@@ -41,7 +41,7 @@ const HobbyList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {hobbies.map((m) => (
+                {hobbyList.map((m) => (
                     <tr key={m.id}>
                     <td>{m.id} </td>
                     <td>{m.Category} </td>

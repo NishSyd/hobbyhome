@@ -9,6 +9,7 @@ import Catalogue from './components/Catalogue';
 import Categories from './components/Categories';
 import EditHobby from './components/EditHobby';
 import HobbyItem from './components/HobbyItem';
+import Login from './components/Login';
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/Hobby/0",
         element: <EditHobby />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
       },
 
     ]
