@@ -2,9 +2,12 @@ package main
 
 import (
 	"backend/internal/models"
-	"encoding/json"
-	"fmt"
+	"context"
+	"errors"
+	"log"
 	"net/http"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
@@ -18,46 +21,44 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 		Version: "1.0.0",
 	}
 
-	out, err := json.Marshal(payload)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(out)
+    _ = app.writeJSON(w, http.StatusOK, payload)
 
 }
 
 func (app application) HobbyList(w http.ResponseWriter, r *http.Request) {
+    log.Println("Requesting all hobbies")
 
-	var hobbies []models.HobbyItem
+    cursor, err := app.db.Collection("HobbyList").Find(context.Background(), bson.D{{}}) 
+    if err != nil {
+        panic(err)
+    }
 
-	naan := models.HobbyItem{
-		Id:          10,
-		Name:        "Garlic naan",
-		Category:    "Cooking",
-		Description: "Made of whole flour wheat",
+    var hobbies []models.HobbyItem
+    if err = cursor.All(context.TODO(), &hobbies); err != nil {
+		panic(err)
 	}
 
-	hobbies = append(hobbies, naan)
+    _ = app.writeJSON(w, http.StatusOK, hobbies)
+}
 
-	acrylic := models.HobbyItem{
-		Id:          11,
-		Name:        "Acrylic girl",
-		Category:    "Painting",
-		Description: "Drawing with a frame",
-	}
+func (app application) addHobby(w http.ResponseWriter, r *http.Request) {
+    log.Println("Adding hobby")
 
-	hobbies = append(hobbies, acrylic)
+    if r.Body == nil {
+        app.errorJSON(w, errors.New("Empty Body"))
+    }
 
-	out, err := json.Marshal(hobbies)
-	if err != nil {
-		fmt.Println(err)
-	}
+    var hobby models.HobbyItem
+    err := app.readJSON(w, r, &hobby)
+    if err != nil {
+        app.errorJSON(w, err)
+    }
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(out)
+    result, err := app.db.Collection("HobbyList").InsertOne(context.Background(), hobby)
 
+    if err != nil {
+        app.errorJSON(w, err)
+    }
+    log.Println("Inserted succesfuly - ", result)
+    _ = app.writeJSON(w, http.StatusOK, "Inserted Successfully")
 }
