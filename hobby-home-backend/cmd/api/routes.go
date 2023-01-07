@@ -17,6 +17,7 @@ func (app *application) routes() http.Handler {
 
 	mux.Get("/HobbyList", app.HobbyList)
 
+    mux.Post("/HobbyList", app.addHobby)
 	return mux
 
 }

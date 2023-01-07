@@ -1,13 +1,13 @@
 package models
 
-import "time"
-
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 type HobbyItem struct {
-	Id          int       `json:"id"`
-	Name        string    `json:"Name"`
-	Category    string    `json:"Category"`
-	Cost        int       `json:"Cost"`
-	Description string    `json:"Description"`
+    Id          primitive.ObjectID       `json:"_id,omitempty" bson:"_id,omitempty`
+	Name        string    `json:"name"` 
+    Category    string    `json:"category"`
+	Cost        int       `json:"cost"`
+	Description string    `json:"description"`
 	Image       string    `json:"image"`
-	Updated     time.Time `json:"updated"`
 }
